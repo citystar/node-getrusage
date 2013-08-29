@@ -73,6 +73,7 @@ extern "C" void init(Handle<Object> target) {
     target->Set(String::New("usage"), FunctionTemplate::New(GetUsage)->GetFunction());
     target->Set(String::New("getcputime"), FunctionTemplate::New(GetCPUTime)->GetFunction());
     target->Set(String::New("getsystemtime"), FunctionTemplate::New(GetSystemTime)->GetFunction());
+    target->Set(String::New("gettimeofday"), FunctionTemplate::New(GetTimeOfDay)->GetFunction());
 }
 
 NODE_MODULE(getrusage, init)
