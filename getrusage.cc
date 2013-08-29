@@ -30,6 +30,30 @@ Handle<Value> GetSystemTime(const Arguments& args) {
         (double)ru.ru_stime.tv_sec + (double)ru.ru_stime.tv_usec * 1e-6);
 }
 
+Handle<Value> GetSysTime(const Arguments& args) {
+    struct rusage ru;
+    getrusage(RUSAGE_SELF, &ru);
+
+    return Number::New( ru.ru_stime.tv_sec * 1e6 + ru.ru_stime.tv_usec );
+}
+
+Handle<Value> GetUserTime(const Arguments& args) {
+    struct rusage ru;
+    getrusage(RUSAGE_SELF, &ru);
+
+    return Number::New( ru.ru_utime.tv_sec * 1e6 + ru.ru_utime.tv_usec);
+}
+
+Handle<Value> GetTimeOfDay(const Arguments& args) {
+    struct timeval tim;
+    int r = gettimeofday(&tim, NULL);
+    if(r < 0) {
+        return Number::New(-1);
+    }
+
+    return Number::New( tim.tv_sec* 1e6 + tim.tv_usec);
+}
+
 static Handle<Value> timevalToNumber(struct timeval &tim) {
   return Number::New((double)tim.tv_sec + (double)tim.tv_usec * 1e-6);
 }
@@ -74,6 +98,8 @@ extern "C" void init(Handle<Object> target) {
     target->Set(String::New("getcputime"), FunctionTemplate::New(GetCPUTime)->GetFunction());
     target->Set(String::New("getsystemtime"), FunctionTemplate::New(GetSystemTime)->GetFunction());
     target->Set(String::New("gettimeofday"), FunctionTemplate::New(GetTimeOfDay)->GetFunction());
+    target->Set(String::New("getsystime"), FunctionTemplate::New(GetSysTime)->GetFunction());
+    target->Set(String::New("getusertime"), FunctionTemplate::New(GetUserTime)->GetFunction());
 }
 
 NODE_MODULE(getrusage, init)
